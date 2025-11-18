@@ -24,6 +24,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => { try {
+              const key = 'theme';
+              const saved = localStorage.getItem(key);
+              const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+              const theme = saved || (prefersDark ? 'dark' : 'light');
+              document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {} })();`,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

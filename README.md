@@ -1,22 +1,24 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## POS System Overview
+
+- POS UI: `http://localhost:3000/pos` — product grid, search, categories, cart, checkout (demo)
+- Admin: `http://localhost:3000/admin` — dashboard, products, categories, orders, customers, reports, settings
+
+Data is mocked under `src/data/*` and exposed via `api/*` GET routes for demo.
+
 ## Getting Started
 
 First, run the development server:
 
-```bash
+```bat
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start at `src/app/page.tsx` or go directly to `/pos` and `/admin`.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id         String   @id @default(cuid())
+  name       String
+  sku        String   @unique
+  price      Decimal  @db.Numeric(10,2)
+  imageUrl   String?
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+  orderItems OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  number    String      @unique
+  createdAt DateTime    @default(now())
+  status    OrderStatus @default(paid)
+  items     OrderItem[]
+  subtotal  Decimal     @db.Numeric(10,2)
+  tax       Decimal     @db.Numeric(10,2)
+  total     Decimal     @db.Numeric(10,2)
+  customer  Customer?   @relation(fields: [customerId], references: [id])
+  customerId String?
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  qty       Int
+  price     Decimal @db.Numeric(10,2)
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+}
+
+model Customer {
+  id      String  @id @default(cuid())
+  name    String
+  phone   String? @unique
+  orders  Order[]
+}
+
+enum OrderStatus {
+  paid
+  refunded
+  void
+}
