@@ -1,38 +1,42 @@
-import { products } from "@/data/products";
+import Link from "next/link";
+import { sql } from "@/lib/db";
+import ProductTable from "@/components/admin/ProductTable";
 
-export default function AdminProductsPage() {
+interface AdminProductRow {
+  id: string;
+  name: string;
+  sku: string;
+  price: any;
+  category_name: string | null;
+}
+
+export default async function AdminProductsPage() {
+  let products: AdminProductRow[] = [];
+  try {
+    const rows = await sql`
+      SELECT p.id, p.name, p.sku, p.price, c.name AS category_name
+      FROM products p
+      LEFT JOIN categories c ON c.id = p.category_id
+      ORDER BY p.name
+      LIMIT 300
+    `;
+    products = rows as AdminProductRow[];
+  } catch (e) {
+    console.error("AdminProductsPage query error", e);
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Products</h1>
-        <button className="rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm">New Product</button>
+        <h1 className="text-3xl font-bold text-primary mb-2">สินค้า</h1>
+        <Link
+          href="/admin/products/new"
+          className="rounded-lg bg-primary text-primary-foreground px-4 py-2 text-base font-semibold shadow hover:bg-primary/90 transition"
+        >
+          + เพิ่มสินค้า
+        </Link>
       </div>
-      <div className="overflow-auto rounded-lg border">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-50 dark:bg-neutral-900">
-            <tr>
-              <th className="text-left p-2">Name</th>
-              <th className="text-left p-2">SKU</th>
-              <th className="text-right p-2">Price</th>
-              <th className="text-left p-2">Category</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => (
-              <tr key={p.id} className="border-t">
-                <td className="p-2">{p.name}</td>
-                <td className="p-2">{p.sku}</td>
-                <td className="p-2 text-right">฿ {p.price.toFixed(2)}</td>
-                <td className="p-2">{p.categoryId}</td>
-                <td className="p-2 text-center">
-                  <button className="px-2 py-1 text-sm">Edit</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ProductTable products={products} />
     </div>
   );
 }
