@@ -5,10 +5,10 @@ export async function GET(_req: Request, props: { params: Promise<{ id: string }
   const { id } = await props.params;
   try {
     const rows = await sql`
-      SELECT id, name, sku, price, image_url, category_id
-      FROM products
-      WHERE id = ${id}
-    `;
+  SELECT id, name, sku, price, image_url, category_id
+  FROM products
+  WHERE id = ${id} AND is_deleted = false
+`;
     if (rows.length === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const r: any = rows[0];
     return NextResponse.json({
@@ -111,7 +111,9 @@ export async function PUT(req: Request, props: { params: Promise<{ id: string }>
 export async function DELETE(_req: Request, props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
   try {
-    const del = await sql`DELETE FROM products WHERE id = ${id} RETURNING id`;
+    const del = await sql`
+      UPDATE products SET is_deleted = true WHERE id = ${id} AND is_deleted = false RETURNING id
+    `;
     if (del.length === 0)
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     return NextResponse.json({ ok: true });

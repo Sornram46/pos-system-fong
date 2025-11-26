@@ -21,25 +21,19 @@ export async function GET(req: Request) {
     if (q) where = sql`${where} AND lower(name) LIKE ${"%" + q + "%"}`;
 
     const countRows = await sql`
-      SELECT COUNT(*)::int AS count
-      FROM products
-      WHERE 1=1 ${where}
-    `;
+  SELECT COUNT(*)::int AS count
+  FROM products
+  WHERE is_deleted = false ${where}
+`;
     const total = countRows[0]?.count ?? 0;
 
-    const rows = await sql`
-      SELECT id,
-             name,
-             sku,
-             price,
-             image_url AS "imageUrl",
-             category_id AS "categoryId"
-      FROM products
-      WHERE 1=1 ${where}
-      ORDER BY name ASC
-      LIMIT ${pageSize} OFFSET ${offset}
-    `;
-
+   const rows = await sql`
+  SELECT id, name, sku, price, image_url AS "imageUrl", category_id AS "categoryId"
+  FROM products
+  WHERE is_deleted = false ${where}
+  ORDER BY name ASC
+  LIMIT ${pageSize} OFFSET ${offset}
+`;
     const items = rows.map((r: any) => ({
       id: r.id,
       name: r.name,
