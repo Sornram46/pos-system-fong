@@ -12,8 +12,8 @@ type Product = {
   name: string;
   sku: string;
   price: number;
-  imageUrl: string | null;
-  categoryId: string;
+  imageUrl?: string | null;
+  categoryId?: string;
 };
 type ProductListResponse = {
   items: Product[];

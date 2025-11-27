@@ -21,21 +21,22 @@ export default async function OrderDetailPage(props: { params: Promise<{ id: str
   const { id } = await props.params;
 
   // ดึงข้อมูลออเดอร์
-  const orderRows = await sql`
-    SELECT id, number, created_at, status, COALESCE(total,0) as total
-    FROM orders
-    WHERE id = ${id}
-  `;
-  const order: OrderDetailRow | undefined = orderRows[0];
-
+// ...existing code...
+const orderRows = await sql`
+  SELECT id, number, created_at, status, COALESCE(total,0) as total
+  FROM orders
+  WHERE id = ${id}
+`;
+const order: OrderDetailRow | undefined = orderRows[0] as OrderDetailRow | undefined;
+// ...existing code...
   // ดึงรายการสินค้าในออเดอร์
-  const items: OrderItemRow[] = await sql`
-    SELECT oi.id, p.name, p.sku, oi.price, oi.qty
-    FROM order_items oi
-    LEFT JOIN products p ON p.id = oi.product_id
-    WHERE oi.order_id = ${id}
-    ORDER BY oi.id
-  `;
+  const items: OrderItemRow[] = (await sql`
+  SELECT oi.id, p.name, p.sku, oi.price, oi.qty
+  FROM order_items oi
+  LEFT JOIN products p ON p.id = oi.product_id
+  WHERE oi.order_id = ${id}
+  ORDER BY oi.id
+`) as OrderItemRow[];
 
   if (!order) {
     return <div className="p-4">Order not found</div>;
